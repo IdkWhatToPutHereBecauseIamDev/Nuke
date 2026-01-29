@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black;color:red;font-size:40px;">
+
+<button id="nukeBtn" style="font-size:40px;">Nuke</button>
+
+<script>
+document.getElementById("nukeBtn").addEventListener("click", () => {
+    // Safe 100-character payload
+    let big = "X".repeat(100);
+
+    // Copy to clipboard (must be inside the same click event)
+    navigator.clipboard.writeText(big).then(() => {
+        // Open prompt immediately after copy
+        prompt("Prompt opened:");
+    }).catch(err => {
+        console.log("Clipboard blocked:", err);
+        prompt("Clipboard blocked, but prompt still opened:");
+    });
+});
+</script>
+
+</body>
+</html>
