@@ -1,24 +1,69 @@
-<!DOCTYPE html>
-<html>
-<body style="background:black;color:red;font-size:40px;">
-
-<button id="nukeBtn" style="font-size:40px;">Nuke</button>
+<button id="nuke">NUKE</button>
 
 <script>
-document.getElementById("nukeBtn").addEventListener("click", () => {
-    // Safe 100-character payload
-    let big = "X".repeat(100);
+const NUKE_URL = "https://youtu.be/thPv_v7890g?si=s1KycAT0KyzCbtDj";
+let nuking = false;
 
-    // Copy to clipboard (must be inside the same click event)
-    navigator.clipboard.writeText(big).then(() => {
-        // Open prompt immediately after copy
-        prompt("Prompt opened:");
-    }).catch(err => {
-        console.log("Clipboard blocked:", err);
-        prompt("Clipboard blocked, but prompt still opened:");
-    });
-});
+document.getElementById("nuke").onclick = () => {
+    if (!nuking) {
+        nuking = true;
+        loopSpawn();   // start infinite spawning
+    }
+};
+
+// LOOP: keeps creating windows forever
+function loopSpawn() {
+    procreate();
+    setTimeout(loopSpawn, 300); // adjust spawn speed
+}
+
+// CREATE + RESPAWN + BOUNCE
+function procreate() {
+    const w = 400;
+    const h = 300;
+
+    const win = window.open(
+        NUKE_URL,
+        "_blank",
+        `width=${w},height=${h},left=100,top=100`
+    );
+
+    if (!win) return;
+
+    // random movement
+    let dx = (Math.random() * 8) + 4;
+    let dy = (Math.random() * 8) + 4;
+
+    playBall(win, w, h, dx, dy);
+
+    // RESPAWN IF CLOSED
+    const watcher = setInterval(() => {
+        if (win.closed) {
+            clearInterval(watcher);
+            procreate(); // instantly recreate the window
+        }
+    }, 200);
+}
+
+// BOUNCING PHYSICS
+function playBall(win, w, h, dx, dy) {
+    const screenW = window.screen.availWidth;
+    const screenH = window.screen.availHeight;
+
+    function step() {
+        if (win.closed) return;
+
+        let x = win.screenX + dx;
+        let y = win.screenY + dy;
+
+        if (x <= 0 || x + w >= screenW) dx = -dx;
+        if (y <= 0 || y + h >= screenH) dy = -dy;
+
+        win.moveTo(x, y);
+
+        requestAnimationFrame(step);
+    }
+
+    step();
+}
 </script>
-
-</body>
-</html>
