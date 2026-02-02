@@ -1,51 +1,64 @@
 <button id="nuke">NUKE</button>
 
 <script>
-const NUKE_URL = "https://youtu.be/thPv_v7890g?si=s1KycAT0KyzCbtDj";
+// GitHub Pages paths
+const VIDEO_URL = "/Nuke/Video.mov";
+const AUDIO_URL = "/Nuke/audio.wav";
+
 let nuking = false;
+let firstWindowSpawned = false;
 
 document.getElementById("nuke").onclick = () => {
     if (!nuking) {
         nuking = true;
-        loopSpawn();   // start infinite spawning
+        loopSpawn();
     }
 };
 
-// LOOP: keeps creating windows forever
 function loopSpawn() {
     procreate();
-    setTimeout(loopSpawn, 300); // adjust spawn speed
+    setTimeout(loopSpawn, 300);
 }
 
-// CREATE + RESPAWN + BOUNCE
 function procreate() {
     const w = 400;
     const h = 300;
 
+    let urlToOpen;
+
+    // FIRST TAB: audio + video
+    if (!firstWindowSpawned) {
+        urlToOpen = AUDIO_URL + "#" + VIDEO_URL; 
+        firstWindowSpawned = true;
+    } 
+    // REST OF TABS: video only
+    else {
+        urlToOpen = VIDEO_URL;
+    }
+
     const win = window.open(
-        NUKE_URL,
+        urlToOpen,
         "_blank",
         `width=${w},height=${h},left=100,top=100`
     );
 
     if (!win) return;
 
-    // random movement
+    // Bounce physics
     let dx = (Math.random() * 8) + 4;
     let dy = (Math.random() * 8) + 4;
 
     playBall(win, w, h, dx, dy);
 
-    // RESPAWN IF CLOSED
+    // Respawn if closed
     const watcher = setInterval(() => {
         if (win.closed) {
             clearInterval(watcher);
-            procreate(); // instantly recreate the window
+            procreate();
         }
     }, 200);
 }
 
-// BOUNCING PHYSICS
 function playBall(win, w, h, dx, dy) {
     const screenW = window.screen.availWidth;
     const screenH = window.screen.availHeight;
